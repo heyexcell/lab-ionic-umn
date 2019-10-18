@@ -1,0 +1,41 @@
+<ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button menu="m1"></ion-menu-button>
+      </ion-buttons>
+      <ion-title>UMN UKM</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+      <ion-grid>
+        <ion-row style="text-align: center" color="primary">
+          <ion-col size-md="6" offset-md="3">
+            <h1><ion-icon name="contact" class="larger"></ion-icon></h1>
+            <h1><b>Natanael Marcelino Wongso</b></h1>
+            <p>00000013896</p>
+          </ion-col>
+        </ion-row>
+        <ion-row style="text-align: center" >
+          <ion-col>
+            <h3>My UKMS</h3>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size-md="6" offset-md="3">
+            <ion-list>
+              <ion-item-sliding *ngFor="let p of loadedProfile" #slidingJoin>
+                <ion-item>
+                  <h5>{{ p.title }}</h5>
+                </ion-item>
+                <ion-item-options>
+                  <ion-item-option color="danger" (click)="onCancelJoin(p.id, slidingJoin)">
+                    <ion-icon name="trash" slot="icon-only"></ion-icon>
+                  </ion-item-option>
+                </ion-item-options>
+              </ion-item-sliding>
+            </ion-list>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
