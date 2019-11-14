@@ -15,11 +15,29 @@ export class AuthPage implements OnInit {
   constructor(private modalCtrl: ModalController, private authSvc: AuthService, private router: Router) { }
 
   ngOnInit() {
+    // this.authSvc.isAuthenticated.subscribe(resp => {
+    //   if (resp) {
+    //     console.log('User is authenticated');
+    //     this.router.navigateByUrl('/home');
+    //   } else {
+    //     console.log('No user');
+    //   }
+    // });
   }
 
   onLogin(f: NgForm) {
-    this.authSvc.login(f.value.email, f.value.pwd);
-    this.router.navigateByUrl('/home');
+    this.authSvc.login(f.value.email, f.value.pwd).subscribe(resp => {
+      if (resp.idToken) {
+        console.log(resp);
+        this.router.navigateByUrl('/home');
+      } else {
+        console.log('login failed.');
+      }
+    },
+    errorResp => {
+      console.log(errorResp);
+    });
+    // this.router.navigateByUrl('/home');
   }
 
   async presentSignUpModal() {
