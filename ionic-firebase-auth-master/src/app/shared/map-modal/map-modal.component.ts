@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, Renderer2, AfterViewInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { resolve } from 'url';
-import { reject } from 'q';
 import { environment } from 'src/environments/environment';
+import { Plugins, Capacitor } from '@capacitor/core';
+import { alertController } from '@ionic/core';
 
 @Component({
   selector: 'app-map-modal',
@@ -10,8 +10,8 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./map-modal.component.scss'],
 })
 export class MapModalComponent implements OnInit, AfterViewInit {
-  lat = 51.678418;
-  lng = 7.809007;
+  lat = 35.6595202;
+  lng = 139.6989984;
   @ViewChild('map', {static: false}) mapElementRef: ElementRef;
 
   constructor(private modalCtrl: ModalController, private renderer: Renderer2) { }
@@ -28,8 +28,16 @@ export class MapModalComponent implements OnInit, AfterViewInit {
       googleMaps.event.addListenerOnce(map, 'idle', () => {
         this.renderer.addClass(mapElement, 'visible');
       });
-      const marker = new googleMaps.Marker({ position: { lat: this.lat, lng: this.lng }, map });
-      console.log(marker);
+
+      this.getLocation().then(loc => {
+        if(!loc) {
+          const marker = new googleMaps.Marker({ position: { lat: this.lat, lng: this.lng }, map });
+        } else {
+          const marker = new googleMaps.Marker({ position: { lat: loc.latitude, lng: loc.longitude }, map });
+          map.panTo(new googleMaps.latLng(loc.latitude, loc.longitude));
+        }
+      });
+      
       map.addListener('click', event => {
         const selectedCoords = {
           lat: event.latLng.lat(),
@@ -73,6 +81,26 @@ export class MapModalComponent implements OnInit, AfterViewInit {
         }
       };
     });
+  }
+
+  async presentAlert() {
+    const alert = await alertController.create({
+      header: 'Alert',
+      subHeader: 'Failed',
+      message: 'Could not get user location.',
+      buttons: ['OK']
+    });
+
+    await alert.present();
+  }
+
+  async getLocation() {
+    if(!Capacitor.isPluginAvailable('Geolocation')) {
+      this.presentAlert();
+      return null;
+    }
+    const coordinates = await Plugins.Geolocation.getCurrentPosition();
+    return coordinates.coords;
   }
 
 
